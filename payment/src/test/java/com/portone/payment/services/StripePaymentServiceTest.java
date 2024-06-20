@@ -1,13 +1,12 @@
 package com.portone.payment.services;
 
 import com.portone.payment.dto.PaymentIntentReqDto;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,11 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class StripePaymentServiceTest {
 
+
+
     @Autowired
     private StripePaymentService stripePaymentService;
 
+    private String transectionId="";
 
-    private String transectionId;
 
     @Test
     public void testCreatePaymentIntent() {
@@ -35,52 +36,31 @@ public class StripePaymentServiceTest {
                     response.get("status")
             );
             transectionId=(String) response.get("id");
-        }
-        catch (Exception exp){
-
-        }
-    }
 
 
-    @Test
-    public void testCapturePaymentIntent() {
 
-        try {
-            Map<String,Object> response= stripePaymentService.capturePaymentIntent(transectionId);
+            Map<String,Object> captureResponse= stripePaymentService.capturePaymentIntent(transectionId);
             assertEquals ("succeeded",
-                    response.get("status")
+                    captureResponse.get("status")
             );
-            transectionId=(String) response.get("id");
-        }
-        catch (Exception exp){
-
-        }
-    }
 
 
-    @Test
-    public void testCreateRefund() {
-        try {
-            Map<String,Object> response= stripePaymentService.createRefund(transectionId);
+            Map<String,Object> refundResponse= stripePaymentService.createRefund(transectionId);
             assertEquals ("succeeded",
-                    response.get("status")
+                    refundResponse.get("status")
             );
-            transectionId=(String) response.get("id");
-        }
-        catch (Exception exp){
 
-        }
-    }
 
-    @Test
-    public void testGetPaymentIntents() {
-
-        try {
             assertTrue(stripePaymentService.getPaymentIntents().size() > -1, "List of PaymentIntents should be greater than -1");
+
         }
         catch (Exception exp){
-
+            assertEquals ("requires_capture",
+                    ""
+            );
         }
-
     }
+
+
+
 }
